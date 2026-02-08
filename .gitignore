@@ -9,11 +9,12 @@ __pycache__/
 *.pyc
 
 # Local databases/stores
-vector_store/
-mlruns/
+vector_store/*
+!vector_store/.gitkeep
 
 # Data
 data/*
+!data/.gitkeep
 !data/README.md
 # Evaluation results
 evaluation_results.*
