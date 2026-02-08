@@ -1,0 +1,55 @@
+# LLMops Multi-Doc Chat: Technical Project Overview
+
+## 1. Project Objective
+Transitioned a local RAG (Retrieval-Augmented Generation) chatbot into a production-ready LLMops pipeline. The goal was to migrate to a scalable backend (OpenAI), implement a robust API layer (FastAPI), integrate state-of-the-art MLOps tools (LangSmith, MLflow), and provide a premium user interface (Streamlit).
+
+## 2. Technical Stack
+### Core RAG & LLM
+- **LLM**: OpenAI `gpt-4o-mini` - Chosen for high reasoning capability at low latency/cost.
+- **Framework**: LangChain (Latest v1.x) - Orchestrates the RAG chain and document processing.
+- **Embeddings**: `all-MiniLM-L6-v2` via `langchain-huggingface` - Local, high-performance embeddings for semantic search.
+- **Vector Database**: Qdrant (Persistent Local Mode) - Stores document chunks for fast retrieval.
+
+### Backend Infrastructure
+- **API Framework**: FastAPI - Modern, high-performance web framework for the chat and ingestion endpoints.
+- **Server**: Uvicorn - ASGI server for running the FastAPI application.
+- **Lambda Integration**: Mangum - Adapter that allows the FastAPI app to run as an AWS Lambda function.
+
+### Frontend UI
+- **Framework**: Streamlit - Custom-built premium interface for real-time chatting, PDF uploading, and MLOps dashboarding.
+- **Styling**: Vanilla CSS injections for a "premium" dark-mode look and feel.
+
+### Observability & MLOps
+- **LangSmith**: Real-time tracing and debugging of every LangChain run. Integrated with robust error handling to prevent data-sync failures.
+- **MLflow**: Experiment tracking and evaluation logging. Records parameters (question, answer) and metrics (source count, response quality).
+- **Automation**: `evaluate.py` - Scripted evaluation suite for running batch tests against the RAG pipeline.
+
+### DevSecOps & Deployment
+- **Containerization**: Docker - Customized Dockerfile based on AWS ECR public images (Python 3.10) for Lambda compatibility.
+- **CI/CD**: GitHub Actions - Automated workflow to build Docker images, push to AWS ECR, and update Lambda functions.
+- **Security**: `.gitignore` and `.env` strategy to ensure API keys (OpenAI, LangSmith) are never committed to version control.
+
+## 3. Key Optimizations & Technical Fixes
+- **Resource Management**: Implemented a shared-object pattern for the Qdrant client. This prevents "Storage Folder Locked" errors by allowing the API and Ingestion modules to share a single database connection.
+- **RAG Accuracy**: 
+    - Boosted retriever context from `k=15` to `k=20` to provide the LLM with richer information.
+    - Refined the RAG prompt to be less restrictive ("ONLY based on context") and more helpful/structured, reducing "Insufficient Information" failures.
+    - Set `temperature=0.1` to ensure consistent, grounded research responses.
+- **Dependency Stability**: Resolved critical version conflicts between `huggingface_hub`, `transformers`, and `langchain-core` by pinning stable versions in the `.LLMenv`.
+- **User Experience**:
+    - Added a `/upload-pdf` endpoint that handles file storage and automatic ingestion in one step.
+    - Implemented robust error messaging in Streamlit to handle backend timeouts or failures gracefully.
+
+## 4. Operational Commands
+- **Start Backend**: `./.LLMenv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
+- **Start UI**: `./.LLMenv/bin/streamlit run streamlit_app.py --server.port 8501`
+- **Start MLflow**: `./.LLMenv/bin/mlflow ui --port 5000`
+- **Run Evaluation**: `./.LLMenv/bin/python evaluate.py`
+
+## 5. Deployment Pipeline
+- **Local -> GitHub**: Commit code (excluding `.env`).
+- **GitHub -> AWS ECR**: Automatic build and push via GitHub Actions.
+- **ECR -> AWS Lambda**: Automatic function update upon new image push.
+
+---
+*Generated: 2026-02-03 20:58 UTC*

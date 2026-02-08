@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Virtual environment
+.LLMenv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Local databases/stores
+vector_store/
+mlruns/
+
+# Data
+data/*
+!data/README.md
+# Evaluation results
+evaluation_results.*

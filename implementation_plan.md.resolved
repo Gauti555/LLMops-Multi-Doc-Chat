@@ -1,0 +1,55 @@
+# Implementation Plan - Phase 2: FastAPI & Architecture Refactor
+
+This plan executes Phase 2 of the roadmap. Key goals are creating the API and making the LLM backend swappable (Ollama for local, OpenAI for AWS) to support the future deployment strategy.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Architecture Update**:
+> - We will modify [chat.py](file:///home/gsavaliya/LLMops_Multi_Doc_Chat/chat.py) to select the LLM based on an environment variable `LLM_PROVIDER` (`ollama` or `openai`).
+> - This prepares the code for AWS Lambda deployment (which will use `openai`) while keeping local development free (using `ollama`).
+> 
+> **Prerequisites**:
+> - You will need an `OPENAI_API_KEY` in your `.env` file eventually (for testing the AWS path).
+> - We will install `langchain-openai` now.
+
+## Proposed Changes
+
+### Dependencies
+#### [MODIFY] [requirements.txt](file:///home/gsavaliya/LLMops_Multi_Doc_Chat/requirements.txt)
+- Add `fastapi`, `uvicorn`.
+- Add `langchain-openai`.
+- Add `python-dotenv`.
+
+### Backend Refactor
+#### [MODIFY] [chat.py](file:///home/gsavaliya/LLMops_Multi_Doc_Chat/chat.py)
+- **Modularize**: Refactor the global code into a `get_rag_chain()` function.
+- **Dual Backend**:
+    - Read `LLM_PROVIDER` from env.
+    - If `openai`: Initialize `ChatOpenAI` (requires API key).
+    - If `ollama`: Initialize `ChatOllama` (existing).
+- **Export**: Expose `get_rag_chain` for `api.py`.
+
+#### [NEW] [api.py](file:///home/gsavaliya/LLMops_Multi_Doc_Chat/api.py)
+Create FastAPI app.
+- **POST /chat**:
+    - Input: `{"question": "..."}`
+    - Logic: Call `rag_chain.invoke`.
+    - Output: `{"answer": "...", "sources": [...]}`
+- **POST /ingest**:
+    - Trigger [ingest.py](file:///home/gsavaliya/LLMops_Multi_Doc_Chat/ingest.py) logic (optional but useful).
+
+### Testing & Tracking Preparation
+*Note: Full implementation of LangSmith and MLflow is in Phase 4, but we will add placeholders.*
+- Ensure `rag_chain` is constructed in a way compatible with LangSmith tracing (LangChain standard runnables usually support this out of the box with env vars).
+
+## Verification Plan
+
+### Manual Verification
+1.  **Local Test (Ollama)**:
+    - Set `LLM_PROVIDER=ollama`.
+    - Run `uvicorn api:app --reload`.
+    - Test `POST /chat`.
+2.  **AWS Path Test (OpenAI)**:
+    - Set `LLM_PROVIDER=openai` and valid `OPENAI_API_KEY`.
+    - Test `POST /chat` to verify OpenAI integration works.

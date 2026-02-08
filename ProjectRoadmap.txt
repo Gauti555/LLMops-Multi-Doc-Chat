@@ -1,0 +1,33 @@
+Project Roadmap: LLMops Multi-Doc Chat
+ Phase 1: Project Roadmap & Architecture
+ Analyze existing code (
+ingest.py
+, 
+chat.py
+)
+ Create detailed implementation plan for FastAPI wrapper
+ Define AWS Deployment Strategy (OpenAI for AWS, Ollama for Local)
+ Phase 2: FastAPI & Architecture Refactor
+ Refactor 
+chat.py
+ to support dual backends (Ollama/OpenAI)
+ Create api.py (FastAPI app)
+ Integrate 
+chat.py
+ logic into API endpoints
+ Verify using Swagger UI
+ Phase 3: Custom UI
+ Design simple UI (e.g., Streamlit or HTML/JS)
+ Connect UI to FastAPI backend
+ Phase 4: Testing & Evaluation (LangSmith & MLflow)
+ Setup MLflow for experiment tracking
+ Setup LangSmith for tracing and testing
+ Run evaluation dataset on the RAG pipeline
+ Phase 5: Containerization (Docker)
+ Create Dockerfile
+ Create docker-compose.yml (App + Vector DB + Ollama/OpenAI Env)
+ Test local Docker build
+ Phase 6: CI/CD & Deployment
+ Setup GitHub Actions for testing/linting
+ Setup ECR pushing
+ Deploy to AWS Lambda (using OpenAI backend)
