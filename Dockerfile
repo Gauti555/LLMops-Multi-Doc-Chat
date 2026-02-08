@@ -4,8 +4,17 @@ FROM public.ecr.aws/lambda/python:3.10
 # Copy requirements.txt
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
 
-# Install build tools needed for packages like tiktoken and pyarrow
-RUN yum update -y && yum install -y gcc gcc-c++ python3-devel
+# System build tools
+RUN yum -y update && \
+    yum -y install gcc gcc-c++ make cmake python3-devel curl && \
+    yum clean all
+
+# Rust toolchain for tiktoken
+RUN curl -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Upgrade pip so it prefers prebuilt wheels when available
+RUN python -m pip install --upgrade pip
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
