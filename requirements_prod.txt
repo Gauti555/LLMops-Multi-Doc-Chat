@@ -1,0 +1,14 @@
+langchain
+langchain-community
+langchain-text-splitters
+langchain-openai
+qdrant-client
+langchain-qdrant
+pypdf
+langchain-huggingface
+python-dotenv
+fastapi
+mangum
+pydantic
+python-multipart
+requests
