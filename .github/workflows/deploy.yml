@@ -25,14 +25,22 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: llmops-multi-doc-chat
-          IMAGE_TAG: latest
+          ECR_REPOSITORY: llmops-multi-doc-chat1
+          IMAGE_TAG: ${{ github.sha }}
         run: |
+          # Build and push with commit SHA
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          
+          # Also tag and push as latest
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Update Lambda Function
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: llmops-multi-doc-chat1
         run: |
           aws lambda update-function-code \
             --function-name llmops-chat-api \
-            --image-uri ${{ steps.login-ecr.outputs.registry }}/llmops-multi-doc-chat:latest
+            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:latest
