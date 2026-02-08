@@ -4,8 +4,10 @@ FROM public.ecr.aws/lambda/python:3.10
 # Copy requirements.txt
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
 
+# Install build tools needed for packages like tiktoken and pyarrow
+RUN yum update -y && yum install -y gcc gcc-c++ python3-devel
+
 # Install dependencies
-# We use --no-cache-dir to keep the image small
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code (v2 - removed .env)
