@@ -1,8 +1,4 @@
-Summary of the Flow
-Conda gave us Python 3.11.
-uv used that Python to create your project folder .LLMenv.
-uv filled .LLMenv with all your libraries incredibly fast.
-pip was added so you can check what's installed using standard commands.
+
 
 
 ############################################################################
@@ -21,77 +17,7 @@ Terminal 2 (UI)
 
 ###########################################################################################
 
-Walkthrough - LLMops Multi-Doc Chat
-I have successfully set up your environment and implemented the ingestion and chat pipelines.
-
-1. Environment Setup (Completed)
-Since your system Python was older, we used Conda to provide Python 3.11, and uv for fast package management.
-
-Conda Environment: llmops
-Virtual Environment: .LLMenv (activated inside Conda env)
-2. Ingestion (Verified)
-The 
-ingest.py
- script has been implemented and successfully ran.
-
-Input: 
-data/Final Version PrimMod4AI___workshop _Paper.pdf
-Vector Store: stored locally in vector_store/ (using Qdrant)
-Embeddings: all-MiniLM-L6-v2
-3. Chat (Implemented)
-The 
-chat.py
- script is ready. It connects to the local Qdrant store and uses Ollama for the LLM.
-
-How to Run
-Start Ollama (in a new terminal):
-
-ollama serve
-(Ensure you have ollama pull llama3.1:8b or change the model in 
-chat.py
-)
-
-Run Chat:
-
-source .LLMenv/bin/activate
-python chat.py
-Changes Made
-Fixed torch installation (forced CPU version to avoid cuda errors).
-Fixed Qdrant concurrency lock issues in 
-ingest.py
-.
-Updated 
-chat.py
- imports for compatibility with modern LangChain packages.
 
 
 
 
-
- Project Setup
- Create project directories (data, vector_store)
- Create project files (
-ingest.py
-, 
-chat.py
-, 
-.env
-, 
-README.md
-)
- Create and populate 
-requirements.txt
- Initialize valid Python environment (Conda or specific Python version)
- Initialize uv environment (once Python >= 3.8 is available)
-Implementation
- Implement 
-ingest.py
- to load PDF and store in Qdrant
- Implement 
-chat.py
- to query Qdrant and chat via Ollama (Implemented, requires Ollama running)
-Optimization
- Tune retrieval parameters (Chunk size, K, Overlap) to improve answer quality
-Evaluation
- Research evaluation strategy from reference repo
- Implement evaluation pipeline (RAGAS or DeepEval)
