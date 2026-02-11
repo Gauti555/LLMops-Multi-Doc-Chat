@@ -2,7 +2,7 @@
 FROM public.ecr.aws/lambda/python:3.10
 
 # Copy requirements
-COPY requirements_prod.txt ${LAMBDA_TASK_ROOT}/requirements.txt
+COPY requirements.txt ${LAMBDA_TASK_ROOT}/requirements.txt
 
 # System build tools
 RUN yum -y update && \
